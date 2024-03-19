@@ -40,14 +40,22 @@ const RATING_STARS = array(
     <ul>
       <?php
       // query the reviews table and get all records
-      $result = exec_sql_query($db, "SELECT * FROM reviews;");
+      $result = exec_sql_query(
+        $db,
+        "SELECT
+           products.name AS 'products.name',
+           reviews.rating AS 'reviews.rating',
+           reviews.comment AS 'reviews.comment'
+         FROM reviews INNER JOIN products ON (reviews.product_id = products.id)
+         ORDER BY reviews.created_at DESC;"
+      );
       $records = $result->fetchAll();
 
       // create a review tile for each record
       foreach ($records as $record) {
-        $name = $record["product_id"];
-        $rating = RATING_STARS[$record["rating"]];
-        $comment = $record["comment"] ?? "";
+        $name = $record["products.name"];
+        $rating = RATING_STARS[$record["reviews.rating"]];
+        $comment = $record["reviews.comment"] ?? "";
 
         // tile partial
         include "includes/review-tile.php";
